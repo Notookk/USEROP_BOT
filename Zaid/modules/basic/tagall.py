@@ -44,18 +44,18 @@ async def mentionall(client: Client, message: Message) -> None:
     spam_chats.add(chat_id)
 
     members = await get_chat_members(client, chat_id)
+
     usrnum = 0
     usrtxt = ""
-
     for member in members:
         usrnum += 1
         usrtxt += f"[{member.user.first_name}](tg://user?id={member.user.id}), "
-        if usrnum == 5:
+        if usrnum == 5 or member == members[-1]:
             if args:
                 txt = f"{args}\n\n{usrtxt}"
                 await send_tagged_message(client, chat_id, txt)
             elif reply_to_message:
-                await reply_to_message.reply(usrtxt)
+                await reply_to_message.reply(usrtxt[:-2])  # Remove the trailing comma and space
             await sleep(2)
             usrnum = 0
             usrtxt = ""
@@ -64,6 +64,7 @@ async def mentionall(client: Client, message: Message) -> None:
         spam_chats.remove(chat_id)
     except KeyError:
         pass
+
 
 
 async def cancel_spam(client: Client, message: Message) -> None:
